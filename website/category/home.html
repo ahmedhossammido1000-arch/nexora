@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#06111f" />
+<meta name="theme-color" content="#0f0a1a" />
 <title>Home &amp; Kitchen — Trending Amazon Finds | NEXORA</title>
 <meta name="description" content="Useful home essentials, kitchen tools, and cozy decor picks. Curated and ranked by NEXORA." />
 <meta name="author" content="NEXORA" />
@@ -27,6 +27,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nexora-shop-us.netlify.app/"},{"@type":"ListItem","position":2,"name":"Home & Kitchen","item":"https://nexora-shop-us.netlify.app/category/home.html"}]}</script>
+<script>
+(function(){
+  var t=localStorage.getItem('nexora-theme');
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light')}
+})();
+</script>
 </head>
 <body>
 
@@ -52,6 +58,7 @@
       <a href='pet'>Pet</a>
       <a href='../about'>About</a>
       <a href='../contact'>Contact</a>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
     </nav>
   </div>
 </header>
@@ -64,7 +71,8 @@
 
 <section class="cat-hero" style="--catc:#ff6b35">
   <div class="container">
-    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <span>Home &amp; Kitchen</span></nav>
+    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <span>Home &amp; Kitchen</span>      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </nav>
     <div class="cat-hero-icon">🏠</div>
     <h1 class="cat-hero-title">Home &amp; Kitchen</h1>
     <p class="cat-hero-blurb">Useful home essentials, kitchen tools, and cozy decor picks.</p>
@@ -76,13 +84,7 @@
   <div class="container">
     <div class="grid-toolbar">
       <span class="grid-label">7 products</span>
-      <select id="sortBy" class="sort-select" onchange="sortGrid(this.value)">
-        <option value="trending">Trending (default)</option>
-        <option value="rating">Highest Rated</option>
-        <option value="discount">Biggest Discount</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-      </select>
+      
     </div>
     <div class="card-grid" id="catGrid"><a class='card' href='../product/owala-disney-princess-freesip-insulated-stainless-steel-water-bottle-w'>
   <div class="card-img">
@@ -92,9 +94,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Owala Disney Princess FreeSip Insulated Stainless Steel Water Bottle with Straw for Sports and Travel, BPA-Free Sports Water Bottle, 24 oz, Ariel</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.7</span> <span class="card-rev">(14,227)</span></div>
-    <div class="card-price-row"><span class="card-price">$34.99</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/super-blanky-wearable-blankets-for-women-adult-wearable-blanket-men-mo'>
@@ -105,9 +105,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Super Blanky Wearable Blankets for Women, Adult Wearable Blanket Men, Mother&#x27;s Day Gifts for Her, Wife Birthday Gift Ideas</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.5</span> <span class="card-rev">(2,679)</span></div>
-    <div class="card-price-row"><span class="card-price">$38.99</span><span class="card-list">$62.49</span><span class="card-disc">-38%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/gifts-for-mom-birthday-gifts-for-women-preserved-rose-forever-flower-i'>
@@ -118,9 +116,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Gifts for Mom Birthday Gifts for Women Preserved Rose Forever Flower in Glass Angel Figurines Fresh Flowers for Delivery Anniversary Mothers Day Real Colorful Roses for Grandma Her Wife from Daughter</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.7</span> <span class="card-rev">(1,292)</span></div>
-    <div class="card-price-row"><span class="card-price">$15.99</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/uarehiby-teacher-appreciation-gifts-for-women-teacher-gifts-in-bulk-wi'>
@@ -131,9 +127,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">UAREHIBY Teacher Appreciation Gifts for Women,Teacher Gifts In Bulk with Thank You Emotional Inspirational Support Crochet Sunflowers,Valentine&#x27;s Day for Teachers,Christmas Gift</h3>
-    <div class="card-rating"><span class="stars">★★★★★</span> <span class="rating-num">4.8</span> <span class="card-rev">(316)</span></div>
-    <div class="card-price-row"><span class="card-price">$26.99</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/scrub-daddy-bbq-daddy-grill-cleaner-kit-bristle-free-grill-brush-with'>
@@ -144,9 +138,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Scrub Daddy BBQ Daddy Grill Cleaner Kit - Bristle Free Grill Brush with Refill + 2 Steel Scour Daddy Grill Sponges - Built-in Grill Scraper - Temperature Controlled Grill Cleaning Tools (4 Count)</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.7</span> <span class="card-rev">(356)</span></div>
-    <div class="card-price-row"><span class="card-price">$36.53</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/yusshn-vegetable-chopper-12-in-1-multifunctional-food-chopper-professi'>
@@ -157,9 +149,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Yusshn Vegetable Chopper,12-in-1 Multifunctional Food Chopper,Professional Onion Chopper with 7 Blades,Vegetable Cutter with Container for Salad,Potato,Carrot,and Garlic; Essential Kitchen Tool(Grey)</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(5,202)</span></div>
-    <div class="card-price-row"><span class="card-price">$12.99</span><span class="card-list">$14.99</span><span class="card-disc">-13%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/inkarts-custom-blankets-with-photo-personalized-blanket-using-my-own-p'>
@@ -170,40 +160,14 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">inkArts Custom Blankets with Photo, Personalized Blanket Using My Own Photo, Customized Blankets with Picture, Personalized Gifts for Women Men Baby Child</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.7</span> <span class="card-rev">(5,238)</span></div>
-    <div class="card-price-row"><span class="card-price">$115.99</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 </div>
   </div>
 </section>
 
-<script>
-(function() {
-  const grid = document.getElementById('catGrid');
-  if (!grid) return;
-  const cards = Array.from(grid.children);
-  const data = cards.map(c => {
-    const price = parseFloat((c.querySelector('.card-price') || {}).textContent?.replace(/[^\d.]/g, '') || '0');
-    const ratingTxt = (c.querySelector('.rating-num') || {}).textContent || '0';
-    const rating = parseFloat(ratingTxt) || 0;
-    const discTxt = (c.querySelector('.card-disc') || {}).textContent || '0';
-    const disc = parseFloat(discTxt.replace(/[^\d.]/g, '')) || 0;
-    return { el: c, price, rating, disc };
-  });
-  window.sortGrid = function(mode) {
-    let sorted = [...data];
-    if (mode === 'rating')      sorted.sort((a, b) => b.rating - a.rating);
-    else if (mode === 'discount')   sorted.sort((a, b) => b.disc - a.disc);
-    else if (mode === 'price-low')  sorted.sort((a, b) => a.price - b.price);
-    else if (mode === 'price-high') sorted.sort((a, b) => b.price - a.price);
-    /* trending = original order */
-    grid.innerHTML = '';
-    sorted.forEach(d => grid.appendChild(d.el));
-  };
-})();
-</script>
+
 
 <footer>
   <div class="container">
@@ -232,6 +196,7 @@
         <div>
           <h6>Legal</h6>
           <a href='../privacy'>Privacy Policy</a>
+          <a href='../cookies'>Cookie Policy</a>
           <a href='../disclosure'>Affiliate Disclosure</a>
           <a href='../terms'>Terms of Service</a>
         </div>
@@ -239,10 +204,60 @@
     </div>
     <p class="disclosure">📢 NEXORA is a participant in the Amazon Services LLC Associates Program, an affiliate
        advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to
-       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Product prices and availability are
-       accurate as of the date/time indicated and are subject to change.</p>
+       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Prices and availability are subject to change — please check Amazon for the most current information.</p>
     <p class="disclosure copyright">© 2026 NEXORA. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+  <div class="container">
+    <p>We use cookies to improve your experience. By continuing to browse, you agree to our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!localStorage.getItem('nexora_cookie_consent')) {
+    document.getElementById('cookieConsent').classList.add('show');
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'accepted');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+function declineCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'declined');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('themeToggle');
+  if(!btn) return;
+  var html=document.documentElement;
+  function setTheme(theme){
+    if(theme==='light'){
+      html.setAttribute('data-theme','light');
+      btn.innerHTML='&#9789;';
+    } else {
+      html.removeAttribute('data-theme');
+      btn.innerHTML='&#9728;&#65039;';
+    }
+    localStorage.setItem('nexora-theme',theme);
+    var mc=document.querySelector('meta[name="theme-color"]');
+    if(mc) mc.setAttribute('content',theme==='light'?'#ffffff':'#0f0a1a');
+  }
+  var saved=localStorage.getItem('nexora-theme')||'dark';
+  setTheme(saved);
+  btn.addEventListener('click',function(){
+    var cur=html.getAttribute('data-theme');
+    setTheme(cur==='light'?'dark':'light');
+  });
+})();
+</script>
 </body>
 </html>

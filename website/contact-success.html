@@ -26,6 +26,12 @@
             margin-bottom: 12px
         }
     </style>
+<script>
+(function(){
+  var t=localStorage.getItem('nexora-theme');
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light')}
+})();
+</script>
 </head>
 
 <body>
@@ -89,6 +95,57 @@
             <p class="disclosure">© 2026 NEXORA. All rights reserved.</p>
         </div>
     </footer>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+  <div class="container">
+    <p>We use cookies to improve your experience. By continuing to browse, you agree to our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!localStorage.getItem('nexora_cookie_consent')) {
+    document.getElementById('cookieConsent').classList.add('show');
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'accepted');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+function declineCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'declined');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('themeToggle');
+  if(!btn) return;
+  var html=document.documentElement;
+  function setTheme(theme){
+    if(theme==='light'){
+      html.setAttribute('data-theme','light');
+      btn.innerHTML='&#9789;';
+    } else {
+      html.removeAttribute('data-theme');
+      btn.innerHTML='&#9728;&#65039;';
+    }
+    localStorage.setItem('nexora-theme',theme);
+    var mc=document.querySelector('meta[name="theme-color"]');
+    if(mc) mc.setAttribute('content',theme==='light'?'#ffffff':'#0f0a1a');
+  }
+  var saved=localStorage.getItem('nexora-theme')||'dark';
+  setTheme(saved);
+  btn.addEventListener('click',function(){
+    var cur=html.getAttribute('data-theme');
+    setTheme(cur==='light'?'dark':'light');
+  });
+})();
+</script>
 </body>
 
 </html>

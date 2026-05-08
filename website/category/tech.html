@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#06111f" />
+<meta name="theme-color" content="#0f0a1a" />
 <title>Electronics — Trending Amazon Finds | NEXORA</title>
 <meta name="description" content="Smart gadgets, accessories, and electronics for modern living. Curated and ranked by NEXORA." />
 <meta name="author" content="NEXORA" />
@@ -27,6 +27,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nexora-shop-us.netlify.app/"},{"@type":"ListItem","position":2,"name":"Electronics","item":"https://nexora-shop-us.netlify.app/category/tech.html"}]}</script>
+<script>
+(function(){
+  var t=localStorage.getItem('nexora-theme');
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light')}
+})();
+</script>
 </head>
 <body>
 
@@ -52,6 +58,7 @@
       <a href='pet'>Pet</a>
       <a href='../about'>About</a>
       <a href='../contact'>Contact</a>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
     </nav>
   </div>
 </header>
@@ -64,7 +71,8 @@
 
 <section class="cat-hero" style="--catc:#2176ff">
   <div class="container">
-    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <span>Electronics</span></nav>
+    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <span>Electronics</span>      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </nav>
     <div class="cat-hero-icon">⚡</div>
     <h1 class="cat-hero-title">Electronics</h1>
     <p class="cat-hero-blurb">Smart gadgets, accessories, and electronics for modern living.</p>
@@ -76,13 +84,7 @@
   <div class="container">
     <div class="grid-toolbar">
       <span class="grid-label">8 products</span>
-      <select id="sortBy" class="sort-select" onchange="sortGrid(this.value)">
-        <option value="trending">Trending (default)</option>
-        <option value="rating">Highest Rated</option>
-        <option value="discount">Biggest Discount</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-      </select>
+      
     </div>
     <div class="card-grid" id="catGrid"><a class='card' href='../product/voice-remote-control-replacement-for-hisense-smart-google-tv-compatibl'>
   <div class="card-img">
@@ -92,9 +94,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Voice Remote Control Replacement for Hisense Smart Google TV，Compatible with Hisense QLED UHD Mini-LED ULED Google TVs</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.3</span> <span class="card-rev">(74,952)</span></div>
-    <div class="card-price-row"><span class="card-price">$17.77</span><span class="card-list">$24.99</span><span class="card-disc">-29%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/keyboard-cleaning-kit-laptop-cleaner-all-in-1-computer-screen-cleaning'>
@@ -105,9 +105,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Keyboard Cleaning Kit Laptop Cleaner, All-in-1 Computer Screen Cleaning Brush Tool, Multi-Function PC Accessories Electronic Cleaner Kit Spray for iPhone iPad Macbook Earbud Camera Monitor with Patent</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.6</span> <span class="card-rev">(10,133)</span></div>
-    <div class="card-price-row"><span class="card-price">$14.99</span><span class="card-list">$19.98</span><span class="card-disc">-25%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/pack-of-2-remote-cover-case-for-roku-tv-remote-control-silicone-protec'>
@@ -118,9 +116,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">(Pack of 2) Remote Cover Case for Roku TV Remote Control/Silicone Protective Sleeve Skin - Glow in The Dark (Green/Blue)</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.5</span> <span class="card-rev">(63,763)</span></div>
-    <div class="card-price-row"><span class="card-price">$7.18</span><span class="card-list">$8.98</span><span class="card-disc">-20%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/universal-replacement-remote-control-for-roku-express-for-roku-premier'>
@@ -131,9 +127,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Universal Replacement Remote Control for Roku Express, for Roku Premiere, for Roku Box, for Roku Player, for Roku 1 2 3 4 -【NOT for Stick or TV】</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(39,392)</span></div>
-    <div class="card-price-row"><span class="card-price">$8.34</span><span class="card-list">$11.77</span><span class="card-disc">-29%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/an-mr24gn-magic-for-lg-smart-tv-voice-remote-control-replacement-unive'>
@@ -144,9 +138,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">AN-MR24gn-Magic-for-LG-Smart-TV-Voice-Remote-Control-Replacement Universal Compatible with LG OLED Webos Thinq Nano Cell Service TVs for AKB75855501 MR23gn MR22gn MR21ga MR20ga</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(52,250)</span></div>
-    <div class="card-price-row"><span class="card-price">$19.99</span><span class="card-list">$24.99</span><span class="card-disc">-20%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/2-pack-cover-for-samsung-remote-silicone-protective-case-compatible-wi'>
@@ -157,9 +149,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">(2 Pack) Cover for Samsung Remote Silicone Protective Case Compatible with Samsung TV Remote Control Cover BN59 Series Glow in The Dark Remote Skin Sleeve</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(21,680)</span></div>
-    <div class="card-price-row"><span class="card-price">$8.99</span><span class="card-list">$11.29</span><span class="card-disc">-20%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/backlit-remote-for-lg-smart-tv-universal-replacement-for-all-lg-tv-rem'>
@@ -170,9 +160,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Backlit Remote for LG Smart TV, Universal Replacement for All LG TV Remote Control for Easy Nighttime Use.1-Year Warranty.</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(44,646)</span></div>
-    <div class="card-price-row"><span class="card-price">$13.57</span><span class="card-list">$15.97</span><span class="card-disc">-15%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/replacement-remote-control-only-for-all-roku-tv-compatible-for-tcl-rok'>
@@ -183,40 +171,14 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Replacement Remote Control Only for All Roku TV, Compatible for TCL Roku/Hisense Roku/Onn Roku Series Smart TVs (Not for Roku Stick and Box)</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(43,672)</span></div>
-    <div class="card-price-row"><span class="card-price">$8.09</span><span class="card-list">$8.99</span><span class="card-disc">-10%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 </div>
   </div>
 </section>
 
-<script>
-(function() {
-  const grid = document.getElementById('catGrid');
-  if (!grid) return;
-  const cards = Array.from(grid.children);
-  const data = cards.map(c => {
-    const price = parseFloat((c.querySelector('.card-price') || {}).textContent?.replace(/[^\d.]/g, '') || '0');
-    const ratingTxt = (c.querySelector('.rating-num') || {}).textContent || '0';
-    const rating = parseFloat(ratingTxt) || 0;
-    const discTxt = (c.querySelector('.card-disc') || {}).textContent || '0';
-    const disc = parseFloat(discTxt.replace(/[^\d.]/g, '')) || 0;
-    return { el: c, price, rating, disc };
-  });
-  window.sortGrid = function(mode) {
-    let sorted = [...data];
-    if (mode === 'rating')      sorted.sort((a, b) => b.rating - a.rating);
-    else if (mode === 'discount')   sorted.sort((a, b) => b.disc - a.disc);
-    else if (mode === 'price-low')  sorted.sort((a, b) => a.price - b.price);
-    else if (mode === 'price-high') sorted.sort((a, b) => b.price - a.price);
-    /* trending = original order */
-    grid.innerHTML = '';
-    sorted.forEach(d => grid.appendChild(d.el));
-  };
-})();
-</script>
+
 
 <footer>
   <div class="container">
@@ -245,6 +207,7 @@
         <div>
           <h6>Legal</h6>
           <a href='../privacy'>Privacy Policy</a>
+          <a href='../cookies'>Cookie Policy</a>
           <a href='../disclosure'>Affiliate Disclosure</a>
           <a href='../terms'>Terms of Service</a>
         </div>
@@ -252,10 +215,60 @@
     </div>
     <p class="disclosure">📢 NEXORA is a participant in the Amazon Services LLC Associates Program, an affiliate
        advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to
-       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Product prices and availability are
-       accurate as of the date/time indicated and are subject to change.</p>
+       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Prices and availability are subject to change — please check Amazon for the most current information.</p>
     <p class="disclosure copyright">© 2026 NEXORA. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+  <div class="container">
+    <p>We use cookies to improve your experience. By continuing to browse, you agree to our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!localStorage.getItem('nexora_cookie_consent')) {
+    document.getElementById('cookieConsent').classList.add('show');
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'accepted');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+function declineCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'declined');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('themeToggle');
+  if(!btn) return;
+  var html=document.documentElement;
+  function setTheme(theme){
+    if(theme==='light'){
+      html.setAttribute('data-theme','light');
+      btn.innerHTML='&#9789;';
+    } else {
+      html.removeAttribute('data-theme');
+      btn.innerHTML='&#9728;&#65039;';
+    }
+    localStorage.setItem('nexora-theme',theme);
+    var mc=document.querySelector('meta[name="theme-color"]');
+    if(mc) mc.setAttribute('content',theme==='light'?'#ffffff':'#0f0a1a');
+  }
+  var saved=localStorage.getItem('nexora-theme')||'dark';
+  setTheme(saved);
+  btn.addEventListener('click',function(){
+    var cur=html.getAttribute('data-theme');
+    setTheme(cur==='light'?'dark':'light');
+  });
+})();
+</script>
 </body>
 </html>
