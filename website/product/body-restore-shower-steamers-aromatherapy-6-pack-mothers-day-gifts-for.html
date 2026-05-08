@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#06111f" />
+<meta name="theme-color" content="#0f0a1a" />
 <title>Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers Day Gifts for Mom, Birthday Gif | NEXORA</title>
 <meta name="description" content="Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers Day Gifts for Mom, Birthday Gifts for Women, Relaxation Stress Relief Self Care – Citrus Essential Oi" />
 <meta name="author" content="NEXORA" />
@@ -28,6 +28,12 @@
 <link rel="stylesheet" href="../site.css" />
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers Day Gifts for Mom, Birthday Gifts for Women, Relaxation Stress Relief Self Care – Citrus Essential Oil Tablets", "image": "https://m.media-amazon.com/images/I/71sE2a6lFxL._AC_SL1500_.jpg", "description": "Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers Day Gifts for Mom, Birthday Gifts for Women, Relaxation Stress Relief Self Care – Citrus Essential Oil Tablets", "url": "https://nexora-shop-us.netlify.app/product/body-restore-shower-steamers-aromatherapy-6-pack-mothers-day-gifts-for.html", "brand": {"@type": "Brand", "name": "Amazon"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nexora-shop-us.netlify.app/"},{"@type":"ListItem","position":2,"name":"Beauty & Personal Care","item":"https://nexora-shop-us.netlify.app/category/beauty.html"},{"@type":"ListItem","position":3,"name":"Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers D","item":"https://nexora-shop-us.netlify.app/product/body-restore-shower-steamers-aromatherapy-6-pack-mothers-day-gifts-for.html"}]}</script>
+<script>
+(function(){
+  var t=localStorage.getItem('nexora-theme');
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light')}
+})();
+</script>
 </head>
 <body>
 
@@ -53,6 +59,7 @@
       <a href='../category/pet'>Pet</a>
       <a href='../about'>About</a>
       <a href='../contact'>Contact</a>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
     </nav>
   </div>
 </header>
@@ -65,7 +72,8 @@
 
 <section class="prod-section">
   <div class="container">
-    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <a href='../category/beauty'>Beauty &amp; Personal Care</a> › <span>Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers D…</span></nav>
+    <nav class="breadcrumb"><a href="https://nexora-shop-us.netlify.app/">Home</a> › <a href='../category/beauty'>Beauty &amp; Personal Care</a> › <span>Body Restore Shower Steamers Aromatherapy 6 Pack – Mothers D…</span>      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </nav>
     <div class="prod-grid">
       <div class="prod-image-col">
         <div class="prod-image-wrap">
@@ -199,6 +207,31 @@ function declineCookies() {
   localStorage.setItem('nexora_cookie_consent', 'declined');
   document.getElementById('cookieConsent').classList.remove('show');
 }
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('themeToggle');
+  if(!btn) return;
+  var html=document.documentElement;
+  function setTheme(theme){
+    if(theme==='light'){
+      html.setAttribute('data-theme','light');
+      btn.innerHTML='&#9789;';
+    } else {
+      html.removeAttribute('data-theme');
+      btn.innerHTML='&#9728;&#65039;';
+    }
+    localStorage.setItem('nexora-theme',theme);
+    var mc=document.querySelector('meta[name="theme-color"]');
+    if(mc) mc.setAttribute('content',theme==='light'?'#ffffff':'#0f0a1a');
+  }
+  var saved=localStorage.getItem('nexora-theme')||'dark';
+  setTheme(saved);
+  btn.addEventListener('click',function(){
+    var cur=html.getAttribute('data-theme');
+    setTheme(cur==='light'?'dark':'light');
+  });
+})();
 </script>
 </body>
 </html>
