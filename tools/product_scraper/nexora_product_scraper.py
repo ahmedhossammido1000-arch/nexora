@@ -23,7 +23,6 @@ import csv
 import hashlib
 import json
 import logging
-import os
 import random
 import re
 import sqlite3
@@ -31,12 +30,11 @@ import sys
 import threading
 import time
 import webbrowser
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import quote, urljoin
+from urllib.parse import quote
 
 import requests
 from bs4 import BeautifulSoup
@@ -71,10 +69,9 @@ except ImportError:
     PANDAS_OK = False
 
 try:
-    from PIL import Image
-    PIL_OK = True
+    from PIL import Image as _PilImage  # noqa: F401 — available for future image processing
 except ImportError:
-    PIL_OK = False
+    pass
 
 
 # ============================================================
