@@ -76,13 +76,7 @@
   <div class="container">
     <div class="grid-toolbar">
       <span class="grid-label">6 products</span>
-      <select id="sortBy" class="sort-select" onchange="sortGrid(this.value)">
-        <option value="trending">Trending (default)</option>
-        <option value="rating">Highest Rated</option>
-        <option value="discount">Biggest Discount</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-      </select>
+      
     </div>
     <div class="card-grid" id="catGrid"><a class='card' href='../product/dipoo-self-cleaning-shedding-brush-skin-friendly-grooming-tool-for-dog'>
   <div class="card-img">
@@ -92,9 +86,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Dipoo Self Cleaning Shedding Brush - Skin Friendly Grooming Tool for Dogs, Cats, and Puppies, Deshedding and Hair Removal for Long and Short Haired Pets, Black</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.6</span> <span class="card-rev">(6,389)</span></div>
-    <div class="card-price-row"><span class="card-price">$9.99</span><span class="card-list">$14.98</span><span class="card-disc">-33%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/kaytee-clean-cozy-white-paper-bedding-made-for-small-animals-24-6-lite'>
@@ -105,9 +97,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Kaytee Clean &amp; Cozy White Paper Bedding, Made for Small Animals, 24.6 Liters</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.7</span> <span class="card-rev">(29,628)</span></div>
-    <div class="card-price-row"><span class="card-price">$14.95</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/fresh-step-simply-unscented-advanced-multi-cat-clumping-litter-18-5-lb'>
@@ -118,9 +108,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Fresh Step Simply Unscented Advanced Multi Cat Clumping Litter, 18.5 lb(Package May Vary)</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.6</span> <span class="card-rev">(17,582)</span></div>
-    <div class="card-price-row"><span class="card-price">$26.35</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/bundle-of-petlibro-cat-water-fountain-cordless-pet-water-fountain-batt'>
@@ -131,9 +119,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Bundle of PETLIBRO Cat Water Fountain, Cordless Pet Water Fountain Battery Operated+8 Packs Replacement Filters for Dockstream Cat Water Fountain WF005 WF115 WF105, 4 Months Set of Replacement Filters</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.6</span> <span class="card-rev">(112)</span></div>
-    <div class="card-price-row"><span class="card-price">$72.09</span><span class="card-list">$78.56</span><span class="card-disc">-8%</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/bark-spark-omega-3-for-dogs-360-fish-oil-treats-for-dog-shedding-skin'>
@@ -144,9 +130,7 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">BARK&amp;SPARK Omega 3 for Dogs - 360 Fish Oil Treats for Dog Shedding, Skin Allergy, Itch Relief, Hot Spots Treatment - Joint Health - Skin and Coat Supplement - EPA &amp; DHA Fatty Acids - Alaskan Salmon</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.3</span> <span class="card-rev">(12,377)</span></div>
-    <div class="card-price-row"><span class="card-price">$22.49</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 <a class='card' href='../product/shameless-pets-soft-dog-treats-bacon-me-crazy-meaty-tenders-soft-chewy'>
@@ -157,40 +141,14 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">Shameless Pets Soft Dog Treats – Bacon Me Crazy Meaty Tenders, Soft &amp; Chewy Treats for Dogs, Real Bacon 1st Ingredient, Grain Free, Healthy Treats for Small, Medium &amp; Large Dogs, 8oz</h3>
-    <div class="card-rating"><span class="stars">★★★★½</span> <span class="rating-num">4.4</span> <span class="card-rev">(598)</span></div>
-    <div class="card-price-row"><span class="card-price">$7.99</span></div>
-    <span class="card-cta">View details →</span>
+<span class="card-cta">See Why It's Trending →</span>
   </div>
 </a>
 </div>
   </div>
 </section>
 
-<script>
-(function() {
-  const grid = document.getElementById('catGrid');
-  if (!grid) return;
-  const cards = Array.from(grid.children);
-  const data = cards.map(c => {
-    const price = parseFloat((c.querySelector('.card-price') || {}).textContent?.replace(/[^\d.]/g, '') || '0');
-    const ratingTxt = (c.querySelector('.rating-num') || {}).textContent || '0';
-    const rating = parseFloat(ratingTxt) || 0;
-    const discTxt = (c.querySelector('.card-disc') || {}).textContent || '0';
-    const disc = parseFloat(discTxt.replace(/[^\d.]/g, '')) || 0;
-    return { el: c, price, rating, disc };
-  });
-  window.sortGrid = function(mode) {
-    let sorted = [...data];
-    if (mode === 'rating')      sorted.sort((a, b) => b.rating - a.rating);
-    else if (mode === 'discount')   sorted.sort((a, b) => b.disc - a.disc);
-    else if (mode === 'price-low')  sorted.sort((a, b) => a.price - b.price);
-    else if (mode === 'price-high') sorted.sort((a, b) => b.price - a.price);
-    /* trending = original order */
-    grid.innerHTML = '';
-    sorted.forEach(d => grid.appendChild(d.el));
-  };
-})();
-</script>
+
 
 <footer>
   <div class="container">
@@ -219,6 +177,7 @@
         <div>
           <h6>Legal</h6>
           <a href='../privacy'>Privacy Policy</a>
+          <a href='../cookies'>Cookie Policy</a>
           <a href='../disclosure'>Affiliate Disclosure</a>
           <a href='../terms'>Terms of Service</a>
         </div>
@@ -226,10 +185,35 @@
     </div>
     <p class="disclosure">📢 NEXORA is a participant in the Amazon Services LLC Associates Program, an affiliate
        advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to
-       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Product prices and availability are
-       accurate as of the date/time indicated and are subject to change.</p>
+       Amazon.com. As an Amazon Associate, NEXORA earns from qualifying purchases. Prices and availability are subject to change — please check Amazon for the most current information.</p>
     <p class="disclosure copyright">© 2026 NEXORA. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+  <div class="container">
+    <p>We use cookies to improve your experience. By continuing to browse, you agree to our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!localStorage.getItem('nexora_cookie_consent')) {
+    document.getElementById('cookieConsent').classList.add('show');
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'accepted');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+function declineCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'declined');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+</script>
 </body>
 </html>

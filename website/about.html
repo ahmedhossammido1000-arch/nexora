@@ -191,6 +191,32 @@
             <p class="disclosure" style="margin-top:12px">© 2026 NEXORA. All rights reserved.</p>
         </div>
     </footer>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+  <div class="container">
+    <p>We use cookies to improve your experience. By continuing to browse, you agree to our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!localStorage.getItem('nexora_cookie_consent')) {
+    document.getElementById('cookieConsent').classList.add('show');
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'accepted');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+function declineCookies() {
+  localStorage.setItem('nexora_cookie_consent', 'declined');
+  document.getElementById('cookieConsent').classList.remove('show');
+}
+</script>
 </body>
 
 </html>
