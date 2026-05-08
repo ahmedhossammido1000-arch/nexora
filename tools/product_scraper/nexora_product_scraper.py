@@ -1764,7 +1764,7 @@ def run_gui() -> None:
 
             # Group by category
             grouped: dict[str, list[Product]] = {c: [] for c in CATEGORIES}
-            for p in self.products:
+            for p in top_picks:
                 if p.category in grouped:
                     grouped[p.category].append(p)
 
@@ -2057,7 +2057,14 @@ def run_gui() -> None:
                                 "image_url": prod.image_url,
                                 "is_top_pick": prod.is_top_pick,
                             })
-                elif p.suffix == ".xlsx" and PANDAS_OK:
+                elif p.suffix == ".xlsx":
+                    if not PANDAS_OK:
+                        messagebox.showerror(
+                            "Export Error",
+                            "pandas and openpyxl are required for Excel export.\n"
+                            "Install them with: pip install pandas openpyxl",
+                        )
+                        return
                     data = [prod.to_dict() for prod in self.products]
                     df = pd.DataFrame(data)
                     df.to_excel(p, index=False, engine="openpyxl")
