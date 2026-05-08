@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>Contact Us | NEXORA</title>
+    <meta name="description"
+        content="Get in touch with the NEXORA team. We respond to questions, feedback, and product suggestions within 2-3 business days." />
+    <link rel="canonical" href="contact.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Contact NEXORA" />
+    <meta property="og:description" content="Reach out to NEXORA — questions, feedback, partnerships." />
+    <meta property="og:url" content="https://nexora-shop-us.netlify.app/contact.html" />
+    <meta property="og:image" content="https://f.top4top.io/p_3776hn9nu1.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pages.css">
+    <style>
+        .contact-form {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 18px 0
+        }
+
+        .form-row {
+            margin-bottom: 16px
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px
+        }
+
+        .form-row input,
+        .form-row textarea,
+        .form-row select {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: .2s
+        }
+
+        .form-row input:focus,
+        .form-row textarea:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: var(--blue)
+        }
+
+        .form-row textarea {
+            min-height: 140px;
+            resize: vertical
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #1a4fa0, #2176ff);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .submit-btn:hover {
+            background: var(--blue-hover);
+            transform: translateY(-1px)
+        }
+
+        .form-note {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="nav-inner">
+                <a class='brand' href='https://nexora-shop-us.netlify.app/'>
+                    <img src="https://f.top4top.io/p_3776hn9nu1.png" alt="NEXORA" class="brand-logo" />
+                    <div class="brand-text">
+                        <h1>NEXORA</h1>
+                        <p>Smart Finds. Better Life.</p>
+                    </div>
+                </a>
+                <div class="nav-links">
+                    <a href='https://nexora-shop-us.netlify.app/'>Home</a>
+                    <a href='category/tech'>Tech</a>
+                    <a href='category/home'>Home &amp; Kitchen</a>
+                    <a href='category/beauty'>Beauty</a>
+                    <a href='category/pet'>Pet</a>
+                    <a href='about'>About</a>
+                    <a href='contact'>Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="container">
+            <div class="breadcrumb"><a href='https://nexora-shop-us.netlify.app/'>Home</a> &nbsp;›&nbsp; Contact</div>
+            <h1>Contact Us</h1>
+            <p>We typically respond within 2-3 business days</p>
+        </div>
+    </section>
+
+    <main>
+        <div class="container">
+            <div class="content">
+                <h2>Get in Touch</h2>
+                <p>Have a question, feedback, partnership idea, or product suggestion? We'd love to hear from you.</p>
+
+                <div class="contact-info">
+                    <p>📧 <strong>Email:</strong> <a href="mailto:karemali11@gmail.com">karemali11@gmail.com</a></p>
+                    <p>⏱ <strong>Response time:</strong> 2-3 business days</p>
+                    <p>🌍 <strong>Languages:</strong> English &amp; Arabic</p>
+                </div>
+
+                <h2>Send Us a Message</h2>
+                <p>Use the form below and we'll get back to you as soon as possible.</p>
+
+                <form action='https://nexora-shop-us.netlify.app/contact-success' class='contact-form' method='POST' name='contact'>
+                    <input type="hidden" name="form-name" value="contact" />
+                    <p style="display:none"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+                    <div class="form-row">
+                        <label for="name">Your Name <span style="color:#e53935">*</span></label>
+                        <input type="text" id="name" name="name" required placeholder="John Doe" />
+                    </div>
+
+                    <div class="form-row">
+                        <label for="email">Email Address <span style="color:#e53935">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="you@example.com" />
+                    </div>
+
+                    <div class="form-row">
+                        <label for="subject">Subject</label>
+                        <select id="subject" name="subject">
+                            <option value="general">General Question</option>
+                            <option value="feedback">Feedback / Suggestion</option>
+                            <option value="product">Product Recommendation</option>
+                            <option value="partnership">Partnership / Business</option>
+                            <option value="legal">Legal / Privacy Inquiry</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="message">Your Message <span style="color:#e53935">*</span></label>
+                        <textarea id="message" name="message" required
+                            placeholder="Tell us how we can help..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Message →</button>
+                    <p class="form-note">By submitting this form, you agree to our
+                        <a href='privacy'>Privacy Policy</a>. We will only use your information to respond to
+                        your inquiry.
+                    </p>
+                </form>
+
+                <h2>Frequently Asked Questions</h2>
+
+                <h3>Do you sell products directly?</h3>
+                <p>No. NEXORA is a discovery platform — we curate trending products available on Amazon. All purchases
+                    are completed on Amazon.com under Amazon's own checkout, shipping, and return process.</p>
+
+                <h3>How do you choose which products to feature?</h3>
+                <p>We use an automated analysis tool that combines Amazon Best Sellers data, Google Trends, Pinterest,
+                    TikTok signals, and verified review counts. The top performers across multiple categories make it
+                    onto our site. Read more on our <a href='about'>About page</a>.</p>
+
+                <h3>Can I suggest a product?</h3>
+                <p>Absolutely. Use the form above with the subject "Product Recommendation" and tell us about it. If
+                    it fits our quality bar, we'll consider adding it.</p>
+
+                <h3>I bought a product through your link and have a problem with it. Can you help?</h3>
+                <p>Unfortunately, we cannot directly help with Amazon orders. Once you complete a purchase, the
+                    transaction is between you and Amazon. Please contact Amazon Customer Service at
+                    <a href="https://www.amazon.com/gp/help/contact-us" rel="nofollow noopener" target="_blank">
+                        amazon.com/contact</a>. We are happy to hear feedback about the product so we can update our
+                    listings.
+                </p>
+
+                <h3>Are you available for partnerships or business inquiries?</h3>
+                <p>Yes. Use the form above with the subject "Partnership / Business" and we'll get back to you.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-brand">
+                <img src="https://f.top4top.io/p_3776hn9nu1.png" alt="NEXORA" class="brand-logo" />
+                <div class="brand-text">
+                    <h1>NEXORA</h1>
+                    <p>Smart Finds. Better Life.</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href='https://nexora-shop-us.netlify.app/'>Home</a>
+                <a href='category/tech'>Tech</a>
+                <a href='category/home'>Home &amp; Kitchen</a>
+                <a href='category/beauty'>Beauty</a>
+                <a href='category/pet'>Pet</a>
+                <a href='about'>About</a>
+                <a href='contact'>Contact</a>
+                <a href='privacy'>Privacy Policy</a>
+                <a href='disclosure'>Affiliate Disclosure</a>
+                <a href='terms'>Terms of Service</a>
+            </div>
+            <p class="disclosure">📢 NEXORA is a participant in the Amazon Services LLC Associates Program, an affiliate
+                advertising program designed to provide a means for sites to earn advertising fees by advertising and
+                linking to Amazon.com. As an Amazon Associate, we earn from qualifying purchases. Product prices and
+                availability are accurate as of the date/time indicated and are subject to change.</p>
+            <p class="disclosure" style="margin-top:12px">© 2026 NEXORA. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
