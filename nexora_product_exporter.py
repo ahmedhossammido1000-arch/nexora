@@ -78,8 +78,14 @@ SITE_URL = "https://nexora-shop-us.netlify.app"
 SITEMAP_URL = f"{SITE_URL}/sitemap.xml"
 IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload"
 
-# Default API keys — user can add more via the GUI (comma-separated, up to 5)
-DEFAULT_IMGBB_KEYS = "9c5a54329d929ce98cde36976412fb23"
+# Default API keys — 5 accounts for automatic rotation on rate limit
+DEFAULT_IMGBB_KEYS = (
+    "9c5a54329d929ce98cde36976412fb23,"
+    "74140ca6301c9d99d9c18db9eb50300f,"
+    "045024182224b79a64103f33c543c90c,"
+    "0eb315e895352245b2ed8d4affa0844e,"
+    "bff906780bd0c442e945916049e2cc86"
+)
 
 
 class ImgBBKeyPool:
