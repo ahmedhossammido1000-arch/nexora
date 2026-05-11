@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 import subprocess
 import sys
@@ -66,9 +67,10 @@ from tkinter import ttk, filedialog, messagebox  # noqa: E402
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-REQUEST_TIMEOUT = 15
-CHECK_DELAY = 1.5  # seconds between Amazon checks (safe rate)
-MAX_RETRIES = 2
+REQUEST_TIMEOUT = 20
+CHECK_DELAY_MIN = 3.0   # minimum seconds between Amazon checks
+CHECK_DELAY_MAX = 6.0   # maximum seconds (random human-like delay)
+MAX_RETRIES = 3          # retry ambiguous / bot-blocked responses
 
 # ---------------------------------------------------------------------------
 # Color palette (dark mode — same as Product Exporter)
@@ -170,18 +172,44 @@ class ProductCheck:
 
 
 # ---------------------------------------------------------------------------
+# Rotating User-Agents (simulate different real browsers)
+# ---------------------------------------------------------------------------
+_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+]
+
+
+# ---------------------------------------------------------------------------
 # HTTP helpers
 # ---------------------------------------------------------------------------
-_session = requests.Session()
-_session.headers.update({
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/125.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.5",
-})
+def _make_session() -> requests.Session:
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": random.choice(_USER_AGENTS),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Cache-Control": "max-age=0",
+    })
+    return s
+
+
+_session = _make_session()
+
+
+def _human_delay() -> None:
+    """Sleep a random duration to simulate human browsing."""
+    time.sleep(random.uniform(CHECK_DELAY_MIN, CHECK_DELAY_MAX))
 
 
 def strip_affiliate_tag(url: str) -> str:
@@ -193,46 +221,131 @@ def strip_affiliate_tag(url: str) -> str:
     return urllib.parse.urlunparse(parsed._replace(query=clean_query))
 
 
-def check_amazon_link(url: str) -> tuple[str, int]:
+def _is_bot_blocked(text: str) -> bool:
+    """Detect if Amazon served a bot-detection / CAPTCHA / throttle page."""
+    markers = [
+        "sorry, we just need to make sure",
+        "enter the characters you see below",
+        "type the characters you see in this image",
+        "to discuss automated access",
+        "automated access to amazon",
+        "api-services-support@amazon",
+    ]
+    lower = text.lower()
+    return any(m in lower for m in markers)
+
+
+def _is_dog_page(text: str) -> bool:
+    """Detect Amazon's 'dog page' which means the product truly doesn't exist."""
+    lower = text.lower()
+    # The real dog/404 page has specific patterns
+    has_sorry = "sorry" in lower and "couldn" in lower and "find" in lower
+    has_dog_img = "g/img/illustrations" in lower
+    return has_sorry and has_dog_img
+
+
+def check_amazon_link(url: str, log_fn=None) -> tuple[str, int]:
     """
     Check if an Amazon product is still available.
     Returns (status, http_code).
     status: 'active', 'removed', or 'error'
     """
+    global _session
+
     for attempt in range(1, MAX_RETRIES + 1):
         try:
+            # Rotate User-Agent each attempt
+            _session.headers["User-Agent"] = random.choice(_USER_AGENTS)
+
             resp = _session.get(url, timeout=REQUEST_TIMEOUT, allow_redirects=True)
             code = resp.status_code
+            text = resp.text
 
             if code == 200:
-                text = resp.text.lower()
-                # Check for "dog page" or unavailable indicators
-                if "currently unavailable" in text:
-                    return "removed", code
-                if "page not found" in text:
+                # 1. Check for bot block / CAPTCHA — NOT a real result
+                if _is_bot_blocked(text):
+                    if log_fn:
+                        log_fn(f"  Bot blocked (attempt {attempt}/{MAX_RETRIES}), waiting...", "warning")
+                    if attempt < MAX_RETRIES:
+                        # Recreate session with new User-Agent and wait longer
+                        _session = _make_session()
+                        time.sleep(random.uniform(8, 15))
+                        continue
+                    return "error", code
+
+                # 2. Check for dog page (true 404 / product removed)
+                if _is_dog_page(text):
                     return "removed", 404
-                if "looking for something?" in text:
-                    return "removed", code
-                if '<div id="dp"' in text or "add to cart" in text or "buy now" in text:
+
+                lower = text.lower()
+
+                # 3. Product page indicators (product exists)
+                product_indicators = [
+                    '<div id="dp"',
+                    'id="productTitle"',
+                    'id="add-to-cart-button"',
+                    '"add to cart"',
+                    '"buy now"',
+                    'id="priceblock_ourprice"',
+                    'id="price_inside_buybox"',
+                    'id="acrPopover"',
+                    'data-asin',
+                ]
+                for indicator in product_indicators:
+                    if indicator in lower:
+                        return "active", code
+
+                # 4. Check for "currently unavailable" (product page exists
+                #    but item is out of stock — still counts as active listing)
+                if "currently unavailable" in lower and 'id="productTitle"' in lower:
                     return "active", code
-                # If we got 200 but no clear indicator, assume active
+
+                # 5. Generic "currently unavailable" without product page = removed
+                if "currently unavailable" in lower:
+                    return "removed", code
+
+                # 6. Page not found patterns (actual removal)
+                if "looking for something?" in lower and "try searching" in lower:
+                    return "removed", code
+
+                # 7. If 200 but no clear signal, retry once then assume active
+                if attempt < MAX_RETRIES:
+                    if log_fn:
+                        log_fn(f"  Ambiguous response (attempt {attempt}), retrying...", "warning")
+                    time.sleep(random.uniform(5, 10))
+                    continue
                 return "active", code
+
             elif code == 404:
                 return "removed", code
+
             elif code in (301, 302, 303, 307, 308):
                 return "active", code
+
             elif code == 503:
-                # Amazon throttling — retry
+                if log_fn:
+                    log_fn(f"  Amazon throttling (503), waiting... (attempt {attempt})", "warning")
                 if attempt < MAX_RETRIES:
-                    time.sleep(3)
+                    _session = _make_session()
+                    time.sleep(random.uniform(10, 20))
                     continue
                 return "error", code
+
+            elif code == 429:
+                if log_fn:
+                    log_fn(f"  Rate limited (429), long wait... (attempt {attempt})", "warning")
+                if attempt < MAX_RETRIES:
+                    _session = _make_session()
+                    time.sleep(random.uniform(15, 30))
+                    continue
+                return "error", code
+
             else:
                 return "error", code
 
         except requests.RequestException:
             if attempt < MAX_RETRIES:
-                time.sleep(2)
+                time.sleep(random.uniform(3, 6))
                 continue
             return "error", 0
 
@@ -725,8 +838,10 @@ class NexoraLinkCheckerApp:
             )
             self.root.after(0, lambda m=status_msg: self._set_status(m))
 
-            # Check the link
-            status, http_code = check_amazon_link(clean_link)
+            # Check the link (with log callback for retry info)
+            def _thread_log(msg, tag):
+                self.root.after(0, lambda m=msg, t=tag: self._log(m, t))
+            status, http_code = check_amazon_link(clean_link, log_fn=_thread_log)
 
             result = ProductCheck(
                 title=product.get("title", ""),
@@ -770,7 +885,7 @@ class NexoraLinkCheckerApp:
             self.root.after(0, lambda v=remaining: self._update_counter("remaining", v))
             self.root.after(0, lambda c=idx + 1, t=total: self._update_progress(c, t))
 
-            time.sleep(CHECK_DELAY)
+            _human_delay()
 
         # Done
         self.root.after(0, lambda: self._on_done())
