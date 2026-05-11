@@ -234,6 +234,7 @@ class Product:
     description: str = ""
     category: str = ""
     affiliate_link: str = ""
+    product_page_url: str = ""
     image_url_original: str = ""
     image_url_imgbb: str = ""
     status: str = "ready"
@@ -323,6 +324,7 @@ def scrape_product(url: str) -> Optional[Product]:
         return None
     soup = BeautifulSoup(html, "html.parser")
     product = Product()
+    product.product_page_url = url
 
     # Title: try multiple selectors (v2 and v3 page layouts)
     for sel in ["h1.prod-title", ".prod-info h1", "h1"]:
@@ -555,7 +557,7 @@ def build_excel(products: list[Product], output_path: str) -> None:
     ws = wb.active
     ws.title = "Nexora Products"
 
-    headers = ["#", "Title", "Description", "Category", "Affiliate Link", "Image URL", "Status"]
+    headers = ["#", "Title", "Description", "Category", "Product Link", "Image URL", "Status"]
     col_widths = [5, 55, 60, 22, 55, 55, 12]
 
     header_font = Font(name="Inter", bold=True, color="FFFFFF", size=11)
@@ -621,12 +623,13 @@ def build_excel(products: list[Product], output_path: str) -> None:
         if product.category in cat_fills:
             cell.fill = cat_fills[product.category]
 
-        cell = ws.cell(row=row_idx, column=5, value=product.affiliate_link)
+        link_val = product.product_page_url or product.affiliate_link
+        cell = ws.cell(row=row_idx, column=5, value=link_val)
         cell.font = link_font
         cell.alignment = cell_align
         cell.border = thin_border
-        if product.affiliate_link:
-            cell.hyperlink = product.affiliate_link
+        if link_val:
+            cell.hyperlink = link_val
 
         img_url = product.image_url_imgbb or product.image_url_original
         cell = ws.cell(row=row_idx, column=6, value=img_url)
