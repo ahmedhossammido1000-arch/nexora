@@ -24,6 +24,7 @@ Author : Devin (for Kareem Elsayed / Nexora project)
 from __future__ import annotations
 
 import base64
+import json
 import os
 import re
 import subprocess
@@ -122,7 +123,7 @@ REQUEST_TIMEOUT = 30
 IMGBB_TIMEOUT = 60
 MAX_RETRIES = 3
 RETRY_DELAY = 2
-RATE_LIMIT_DELAY = 0.5
+RATE_LIMIT_DELAY = 1.5  # delay between ImgBB uploads to avoid rate limits
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_FILE = str(SCRIPT_DIR / "nexora_products_export.xlsx")
@@ -293,6 +294,17 @@ def get_product_urls() -> list[str]:
     return [loc.get_text(strip=True) for loc in soup.find_all("loc") if "/product/" in loc.get_text()]
 
 
+def _resolve_image_url(src: str) -> str:
+    """Convert relative image URLs to absolute."""
+    if not src:
+        return ""
+    if src.startswith("/"):
+        return SITE_URL + src
+    if not src.startswith("http"):
+        return SITE_URL + "/" + src
+    return src
+
+
 def scrape_product(url: str) -> Optional[Product]:
     html = fetch(url)
     if not html:
@@ -300,26 +312,64 @@ def scrape_product(url: str) -> Optional[Product]:
     soup = BeautifulSoup(html, "html.parser")
     product = Product()
 
-    title_el = soup.select_one("h1.prod-title")
-    if title_el:
-        product.title = title_el.get_text(strip=True)
+    # Title: try multiple selectors (v2 and v3 page layouts)
+    for sel in ["h1.prod-title", ".prod-info h1", "h1"]:
+        title_el = soup.select_one(sel)
+        if title_el:
+            product.title = title_el.get_text(strip=True)
+            break
 
-    cat_el = soup.select_one("span.prod-cat")
-    if cat_el:
-        product.category = normalize_category(cat_el.get_text(strip=True))
+    # Category: try multiple selectors
+    for sel in ["span.prod-cat", ".prod-badge"]:
+        cat_el = soup.select_one(sel)
+        if cat_el:
+            product.category = normalize_category(cat_el.get_text(strip=True))
+            break
 
-    img_wrap = soup.select_one(".prod-image-wrap img")
-    if img_wrap and img_wrap.get("src"):
-        product.image_url_original = img_wrap["src"]
+    # If no category from HTML, try JSON-LD schema
+    if not product.category:
+        schema_el = soup.select_one('script[type="application/ld+json"]')
+        if schema_el:
+            try:
+                schema = json.loads(schema_el.get_text())
+                cat_val = schema.get("category", "")
+                if cat_val:
+                    product.category = normalize_category(cat_val)
+            except (json.JSONDecodeError, AttributeError):
+                pass
 
+    # Image: try multiple selectors
+    for sel in [".prod-image-wrap img", ".prod-image img", 'meta[property="og:image"]']:
+        img_el = soup.select_one(sel)
+        if img_el:
+            src = img_el.get("src") or img_el.get("content", "")
+            if src:
+                product.image_url_original = _resolve_image_url(src)
+                break
+
+    # Affiliate link
     buy_btn = soup.select_one("a.buy-btn")
     if buy_btn and buy_btn.get("href"):
         product.affiliate_link = buy_btn["href"]
 
+    # Description: try multiple selectors
     desc_div = soup.select_one(".prod-description")
     if desc_div:
-        paragraphs = [p.get_text(strip=True) for p in desc_div.find_all("p")]
-        product.description = "\n".join(p for p in paragraphs if p)
+        # Try .prod-description-body first (new layout)
+        body = desc_div.select_one(".prod-description-body")
+        if body:
+            # New format uses <ul> with <li> items
+            items = body.find_all("li")
+            if items:
+                product.description = "\n".join(
+                    li.get_text(strip=True) for li in items if li.get_text(strip=True)
+                )
+            else:
+                paragraphs = [p.get_text(strip=True) for p in body.find_all("p")]
+                product.description = "\n".join(p for p in paragraphs if p)
+        else:
+            paragraphs = [p.get_text(strip=True) for p in desc_div.find_all("p")]
+            product.description = "\n".join(p for p in paragraphs if p)
 
     if not product.title:
         return None
@@ -328,48 +378,79 @@ def scrape_product(url: str) -> Optional[Product]:
 
 def upload_to_imgbb(image_url: str, name: str = "", log_fn=None) -> Optional[str]:
     """Upload image to ImgBB with automatic key rotation on rate limit."""
-    image_data = fetch_bytes(image_url)
-    if not image_data:
-        return None
-    encoded = base64.b64encode(image_data).decode("utf-8")
-
-    base_payload: dict[str, str] = {"image": encoded}
+    # First try uploading via URL (faster, no download needed)
+    # Fall back to base64 if URL upload fails
+    slug = ""
     if name:
         slug = re.sub(r"[^a-zA-Z0-9_-]", "", name.replace(" ", "-"))[:60]
-        base_payload["name"] = slug
 
     # Try each key in the pool (rotate on failure)
     keys_tried = 0
     while keys_tried < _imgbb_pool.count:
         current_key = _imgbb_pool.current
-        payload = {**base_payload, "key": current_key}
         key_label = f"Key {(_imgbb_pool._idx % _imgbb_pool.count) + 1}/{_imgbb_pool.count}"
 
         for attempt in range(1, MAX_RETRIES + 1):
             try:
+                # Try URL-based upload first
+                payload: dict[str, str] = {
+                    "key": current_key,
+                    "image": image_url,
+                }
+                if slug:
+                    payload["name"] = slug
+
                 resp = _session.post(IMGBB_UPLOAD_URL, data=payload, timeout=IMGBB_TIMEOUT)
                 result = resp.json()
+
                 if result.get("success"):
                     return result["data"]["url"]
-                # Rate limited or forbidden — rotate to next key
-                error_msg = result.get("error", {}).get("message", "")
-                if "forbidden" in error_msg.lower() or resp.status_code in (429, 403):
+
+                # Check for rate limit / forbidden
+                error_msg = str(result.get("error", {}).get("message", ""))
+                error_code = result.get("error", {}).get("code", 0)
+                status_code = resp.status_code
+
+                if status_code in (429, 403) or "forbidden" in error_msg.lower():
                     if log_fn:
-                        log_fn(f"{key_label} rate limited, switching...", "warning")
-                    break  # break inner loop to rotate key
-            except requests.RequestException:
-                pass
+                        log_fn(f"  {key_label} rate limited, switching...", "warning")
+                    break  # rotate to next key
+
+                # If URL upload failed for other reason, try base64
+                if attempt == 1:
+                    image_data = fetch_bytes(image_url)
+                    if image_data:
+                        encoded = base64.b64encode(image_data).decode("utf-8")
+                        payload["image"] = encoded
+                        resp2 = _session.post(IMGBB_UPLOAD_URL, data=payload, timeout=IMGBB_TIMEOUT)
+                        result2 = resp2.json()
+                        if result2.get("success"):
+                            return result2["data"]["url"]
+                        error_msg2 = str(result2.get("error", {}).get("message", ""))
+                        if resp2.status_code in (429, 403) or "forbidden" in error_msg2.lower():
+                            if log_fn:
+                                log_fn(f"  {key_label} rate limited (base64), switching...", "warning")
+                            break  # rotate to next key
+
+                if log_fn and attempt == MAX_RETRIES:
+                    log_fn(f"  {key_label} error: {error_msg or error_code}", "warning")
+
+            except requests.RequestException as exc:
+                if log_fn and attempt == MAX_RETRIES:
+                    log_fn(f"  {key_label} network error: {exc}", "warning")
+
             if attempt < MAX_RETRIES:
                 time.sleep(RETRY_DELAY * attempt)
         else:
-            # All retries failed for this key without rate limit
+            # All retries exhausted for this key — rotate
             keys_tried += 1
             _imgbb_pool.rotate()
             continue
 
-        # Rate limited — rotate to next key
+        # Rate limited — rotate to next key and try immediately
         keys_tried += 1
         _imgbb_pool.rotate()
+        time.sleep(1)  # brief pause before trying next key
         continue
 
     return None
