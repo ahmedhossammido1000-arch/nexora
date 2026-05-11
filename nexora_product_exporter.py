@@ -78,6 +78,8 @@ from tkinter import ttk, messagebox  # noqa: E402
 SITE_URL = "https://nexora-shop-us.netlify.app"
 SITEMAP_URL = f"{SITE_URL}/sitemap.xml"
 IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload"
+FREEIMAGE_UPLOAD_URL = "https://freeimage.host/api/1/upload"
+FREEIMAGE_API_KEY = "6d207e02198a847aa98d0a2a901485a5"
 
 # Default API keys — 5 accounts for automatic rotation on rate limit
 DEFAULT_IMGBB_KEYS = (
@@ -127,6 +129,7 @@ RATE_LIMIT_DELAY = 1.5  # delay between ImgBB uploads to avoid rate limits
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_FILE = str(SCRIPT_DIR / "nexora_products_export.xlsx")
+HISTORY_FILE = str(SCRIPT_DIR / "nexora_export_history.json")
 
 # ---------------------------------------------------------------------------
 # Color palette (dark mode)
@@ -177,6 +180,10 @@ LANG = {
         "log_title": "Live Log",
         "category_breakdown": "Category Breakdown",
         "no_products": "No products found on the website.",
+        "all_exported": "All products already exported! No new products to process.",
+        "clear_history": "Clear History",
+        "history_cleared": "History cleared! Next export will include all products.",
+        "history_info": "History: {n} product(s) previously exported",
         "scrape_phase": "PHASE 1: Scraping Products",
         "upload_phase": "PHASE 2: Uploading Images",
         "excel_phase": "PHASE 3: Generating Excel",
@@ -208,6 +215,10 @@ LANG = {
         "log_title": "سجل مباشر",
         "category_breakdown": "تقسيم الفئات",
         "no_products": "لم يتم العثور على منتجات في الموقع.",
+        "all_exported": "كل المنتجات تم تصديرها من قبل! لا توجد منتجات جديدة.",
+        "clear_history": "مسح السجل",
+        "history_cleared": "تم مسح السجل! التصدير القادم سيشمل كل المنتجات.",
+        "history_info": "السجل: {n} منتج تم تصديره مسبقاً",
         "scrape_phase": "المرحلة 1: سحب المنتجات",
         "upload_phase": "المرحلة 2: رفع الصور",
         "excel_phase": "المرحلة 3: إنشاء ملف Excel",
@@ -281,7 +292,8 @@ CATEGORY_MAP = {
 
 
 def normalize_category(raw: str) -> str:
-    cleaned = re.sub(r"[^\w\s&]", "", raw).strip()
+    # Strip emojis and special chars, keep only ASCII letters, digits, spaces, &
+    cleaned = re.sub(r"[^a-zA-Z0-9\s&]", "", raw).strip()
     key = cleaned.lower()
     return CATEGORY_MAP.get(key, cleaned if cleaned else "Other")
 
@@ -454,6 +466,85 @@ def upload_to_imgbb(image_url: str, name: str = "", log_fn=None) -> Optional[str
         continue
 
     return None
+
+
+def upload_to_freeimage(image_url: str, name: str = "", log_fn=None) -> Optional[str]:
+    """Upload image to FreeImage.host as fallback."""
+    try:
+        payload = {
+            "key": FREEIMAGE_API_KEY,
+            "source": image_url,
+            "format": "json",
+        }
+        if name:
+            payload["name"] = re.sub(r"[^a-zA-Z0-9_-]", "", name.replace(" ", "-"))[:60]
+
+        resp = _session.post(FREEIMAGE_UPLOAD_URL, data=payload, timeout=IMGBB_TIMEOUT)
+        result = resp.json()
+
+        if result.get("status_code") == 200:
+            url = result.get("image", {}).get("url", "")
+            if url:
+                if log_fn:
+                    log_fn("  Uploaded via FreeImage.host (backup)", "success")
+                return url
+
+        # Try base64 fallback
+        image_data = fetch_bytes(image_url)
+        if image_data:
+            encoded = base64.b64encode(image_data).decode("utf-8")
+            payload["source"] = encoded
+            resp2 = _session.post(FREEIMAGE_UPLOAD_URL, data=payload, timeout=IMGBB_TIMEOUT)
+            result2 = resp2.json()
+            if result2.get("status_code") == 200:
+                url2 = result2.get("image", {}).get("url", "")
+                if url2:
+                    if log_fn:
+                        log_fn("  Uploaded via FreeImage.host base64 (backup)", "success")
+                    return url2
+
+        if log_fn:
+            err = result.get("error", {}).get("message", "unknown")
+            log_fn(f"  FreeImage.host also failed: {err}", "warning")
+    except Exception as exc:
+        if log_fn:
+            log_fn(f"  FreeImage.host error: {exc}", "warning")
+
+    return None
+
+
+def upload_image(image_url: str, name: str = "", log_fn=None) -> Optional[str]:
+    """Upload image: try ImgBB first, then FreeImage.host as backup."""
+    result = upload_to_imgbb(image_url, name=name, log_fn=log_fn)
+    if result:
+        return result
+
+    # Fallback to FreeImage.host
+    if log_fn:
+        log_fn("  ImgBB failed — trying FreeImage.host backup...", "warning")
+    return upload_to_freeimage(image_url, name=name, log_fn=log_fn)
+
+
+# ---------------------------------------------------------------------------
+# History (track previously exported products to avoid duplicates)
+# ---------------------------------------------------------------------------
+def load_history() -> set[str]:
+    """Load set of previously exported product URLs."""
+    if not os.path.isfile(HISTORY_FILE):
+        return set()
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return set(data.get("exported_urls", []))
+    except (json.JSONDecodeError, IOError):
+        return set()
+
+
+def save_history(urls: set[str]) -> None:
+    """Save exported product URLs to history file."""
+    data = {"exported_urls": sorted(urls)}
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 # ---------------------------------------------------------------------------
@@ -813,7 +904,15 @@ class NexoraExporterApp:
             activeforeground="white", bd=0, padx=30, pady=10,
             cursor="hand2", command=self._on_start,
         )
-        self.start_btn.pack(side="left", expand=True, fill="x", padx=(0, 5))
+        self.start_btn.pack(side="left", expand=True, fill="x", padx=(0, 3))
+
+        self.clear_hist_btn = tk.Button(
+            btn_frame, text="Clear History", font=("Helvetica", 11, "bold"),
+            fg=TEXT_PRIMARY, bg="#8B0000", activebackground="#B22222",
+            activeforeground="white", bd=0, padx=15, pady=10,
+            cursor="hand2", command=self._clear_history,
+        )
+        self.clear_hist_btn.pack(side="left", padx=(3, 3))
 
         self.open_btn = tk.Button(
             btn_frame, text="Open File", font=("Helvetica", 13, "bold"),
@@ -821,7 +920,12 @@ class NexoraExporterApp:
             activeforeground="white", bd=0, padx=30, pady=10,
             cursor="hand2", state="disabled", command=self._open_file,
         )
-        self.open_btn.pack(side="right", expand=True, fill="x", padx=(5, 0))
+        self.open_btn.pack(side="right", expand=True, fill="x", padx=(3, 0))
+
+        # Show history info on startup
+        history = load_history()
+        if history:
+            self._log(self._t("history_info").format(n=len(history)), "accent")
 
     # ── Language toggle ──────────────────────────────────────────────────
     def _toggle_lang(self) -> None:
@@ -846,6 +950,7 @@ class NexoraExporterApp:
             self.status_label.config(text=t["status_idle"])
 
         self.open_btn.config(text=t["open_file"])
+        self.clear_hist_btn.config(text=t["clear_history"])
         self._on_api_keys_changed()
 
         counter_keys_map = {
@@ -939,11 +1044,29 @@ class NexoraExporterApp:
             self.root.after(0, lambda: self._on_error(self._t("no_products")))
             return
 
+        # Filter out already exported products (history)
+        history = load_history()
+        if history:
+            new_urls = [u for u in product_urls if u not in history]
+            skipped = len(product_urls) - len(new_urls)
+            if skipped > 0:
+                self.root.after(0, lambda s=skipped: self._log(
+                    f"History: skipping {s} previously exported product(s)", "accent"
+                ))
+            product_urls = new_urls
+
+        if not product_urls:
+            self.root.after(0, lambda: self._log(
+                self._t("all_exported"), "success"
+            ))
+            self.root.after(0, lambda: self._on_done(0))
+            return
+
         total = len(product_urls)
         self.total_count = total
         self.root.after(0, lambda: self._update_counter("total", total))
         self.root.after(0, lambda: self._update_counter("remaining", total))
-        self.root.after(0, lambda: self._log(f"Found {total} products in sitemap", "success"))
+        self.root.after(0, lambda: self._log(f"Found {total} new products to export", "success"))
 
         # Phase 1: Scrape products
         products: list[Product] = []
@@ -1009,7 +1132,7 @@ class NexoraExporterApp:
                 ))
                 continue
 
-            imgbb_url = upload_to_imgbb(
+            imgbb_url = upload_image(
                 product.image_url_original, name=product.title[:60],
                 log_fn=lambda msg, tag: self.root.after(0, lambda m=msg, t=tag: self._log(m, t)),
             )
@@ -1047,6 +1170,14 @@ class NexoraExporterApp:
 
         build_excel(products, OUTPUT_FILE)
 
+        # Save history: add these product URLs
+        exported_urls = {url for url in product_urls}
+        updated_history = history | exported_urls
+        save_history(updated_history)
+        self.root.after(0, lambda: self._log(
+            f"History updated: {len(updated_history)} total products tracked", "accent"
+        ))
+
         self.root.after(0, lambda: self._log(f"File saved: {OUTPUT_FILE}", "success"))
 
         # Category breakdown
@@ -1080,6 +1211,12 @@ class NexoraExporterApp:
         self.start_btn.config(text=self._t("start_btn"), state="normal", bg=ACCENT)
         self.api_keys_entry.config(state="normal")
         self._log(f"ERROR: {err}", "error")
+
+    def _clear_history(self) -> None:
+        if self.running:
+            return
+        save_history(set())
+        self._log(self._t("history_cleared"), "success")
 
     def _open_file(self) -> None:
         if os.path.exists(OUTPUT_FILE):
