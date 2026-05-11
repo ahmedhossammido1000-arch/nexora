@@ -1,41 +1,69 @@
 """
 NEXORA Product Exporter
 =======================
-Scrapes all products from the live Nexora website, uploads each product image
-to ImgBB, and produces an Excel (.xlsx) spreadsheet ready for Make.com automation.
+Standalone tool: scrapes all products from the live Nexora website,
+uploads each product image to ImgBB, and produces a styled Excel (.xlsx)
+spreadsheet ready for Make.com automation.
 
-Columns: Title | Description | Category | Affiliate Link | Image URL (ImgBB) | Status
+Columns: # | Title | Description | Category | Affiliate Link | Image URL | Status
+
+Requirements (install once):
+    pip install requests beautifulsoup4 openpyxl
 
 Usage:
     python nexora_product_exporter.py
 
 Output:
-    nexora_products_export.xlsx   (in current working directory)
+    nexora_products_export.xlsx   (saved next to this script)
 
 Author : Devin (for Kareem Elsayed / Nexora project)
 """
 from __future__ import annotations
 
 import base64
-import io
 import logging
+import os
 import re
+import subprocess
 import sys
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
-from urllib.parse import urljoin
-
 import warnings
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
 
-import requests
-from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
-from openpyxl import Workbook
+# ---------------------------------------------------------------------------
+# Auto-install missing dependencies
+# ---------------------------------------------------------------------------
+_REQUIRED = ["requests", "bs4", "openpyxl"]
+
+
+def _ensure_deps() -> None:
+    missing = []
+    for pkg in _REQUIRED:
+        try:
+            __import__(pkg)
+        except ImportError:
+            missing.append(pkg)
+    if not missing:
+        return
+    pip_names = [p if p != "bs4" else "beautifulsoup4" for p in missing]
+    print(f"Installing missing packages: {', '.join(pip_names)} ...")
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "--quiet"] + pip_names,
+    )
+
+
+_ensure_deps()
+
+import requests  # noqa: E402
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # noqa: E402
+from openpyxl import Workbook  # noqa: E402
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side  # noqa: E402
+from openpyxl.utils import get_column_letter  # noqa: E402
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
-from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
-from openpyxl.utils import get_column_letter
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -51,7 +79,9 @@ MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds between retries
 RATE_LIMIT_DELAY = 0.5  # seconds between imgbb uploads
 
-OUTPUT_FILE = "nexora_products_export.xlsx"
+# Output file is saved next to the script itself
+SCRIPT_DIR = Path(__file__).resolve().parent
+OUTPUT_FILE = str(SCRIPT_DIR / "nexora_products_export.xlsx")
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -278,8 +308,8 @@ def build_excel(products: list[Product], output_path: str) -> None:
     cell_align = Alignment(vertical="top", wrap_text=True)
     link_font = Font(name="Inter", size=10, color="0563C1", underline="single")
 
-    ready_fill = PatternFill(start_color="d4edda", end_color="d4edda", fill_type="solid")
-    ready_font = Font(name="Inter", size=10, bold=True, color="155724")
+    ready_fill = PatternFill(start_color="ff0000", end_color="ff0000", fill_type="solid")
+    ready_font = Font(name="Inter", size=10, bold=True, color="FFFFFF")
 
     alt_fill = PatternFill(start_color="f8f9fa", end_color="f8f9fa", fill_type="solid")
     thin_border = Border(
@@ -477,4 +507,13 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nCancelled by user.")
+    except Exception as exc:
+        log.exception("Unexpected error: %s", exc)
+    finally:
+        # Keep the window open on Windows so the user can see results
+        if sys.platform == "win32":
+            input("\nPress Enter to exit...")
